@@ -1,0 +1,7 @@
+The goals of this project are:
+- To create a benchmarking tool
+- To learn how haskell performs on different machines and in the browser.
+- Possibly to compare different haskell -> javascript compilers.
+- To try out optimization flags.
+- To write a fun/educational pi calculator in haskell.
+- 
