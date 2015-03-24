@@ -1,17 +1,13 @@
 import System.Environment
 import Data.Ratio
 
--- compute atan x using terms of taylor series greater than threshold
-atanTaylor :: Rational -> Rational -> Rational
-atanTaylor x threshold = sum terms where
-    terms = takeWhile ((threshold <).abs) $ zipWith (/) (iterate (*negXSqrd) x) [1,3..] where
-        negXSqrd = -x*x -- improves readabilty but had no effect on performance
-
 -- (exact formula thanks to wikipedia): pi/4 = 4 * atan 1/5 - atan 1/239
 -- http://en.wikipedia.org/wiki/Machin-like_formula
 pi' :: Int -> Rational
-pi' digits = 4*(4 * atanTaylor (1%5) threshold - atanTaylor (1%239) threshold) where
-    threshold = 1 % 10^digits
+pi' digits = 4*(4 * atanTaylor (1%5) cutoff - atanTaylor (1%239) cutoff ) where
+    cutoff = 1 % 10^digits
+    atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..] -- also from wikipedia
+    atanTaylor x ct = sum $ takeWhile ((ct <).abs) $ atanTaylorTerms x
 
 -- compute digits by adding zeros to numerator and dividing
 piDigits :: Int -> String
