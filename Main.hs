@@ -4,7 +4,8 @@ import Data.Ratio
 -- (exact formula thanks to wikipedia): pi/4 = 4 * atan 1/5 - atan 1/239
 -- http://en.wikipedia.org/wiki/Machin-like_formula
 pi' :: Int -> Rational
-pi' digits = 4*(4 * atanTaylor (1%5) cutoff - atanTaylor (1%239) cutoff ) where
+pi' digits = 4*sum [fst p * atanTaylor (snd p) cutoff | p <- machinParameters] where 
+    machinParameters = [(4,1%5),(-1,1%239)]
     cutoff = 1 % 10^digits
     atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..] -- also from wikipedia
     atanTaylor x ct = sum $ takeWhile ((ct <).abs) $ atanTaylorTerms x
