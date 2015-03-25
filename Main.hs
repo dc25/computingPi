@@ -1,14 +1,17 @@
 import System.Environment
 import Data.Ratio
 
+atanTaylorTerms :: Rational -> [Rational]
+atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..] -- from wikipedia
+
+atanTaylor :: Rational -> Rational -> Rational
+atanTaylor x termLimit = sum $ takeWhile ((termLimit <).abs) $ atanTaylorTerms x
+
 -- (exact formula thanks to wikipedia): pi/4 = 4 * atan 1/5 - atan 1/239
 -- http://en.wikipedia.org/wiki/Machin-like_formula
 pi' :: Int -> Rational
-pi' digits = 4*sum [fst p * atanTaylor (snd p) cutoff | p <- machinParameters] where 
-    machinParameters = [(4,1%5),(-1,1%239)]
-    cutoff = 1 % 10^digits
-    atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..] -- also from wikipedia
-    atanTaylor x ct = sum $ takeWhile ((ct <).abs) $ atanTaylorTerms x
+pi' digits = 4*sum [scale * atanTaylor arg termLimit | (scale, arg) <- parameters, let termLimit = (1%10^digits)/abs scale] where 
+    parameters = [ ( 183, 1%239), (  32, 1%1023), ( -68, 1%5832), (  12, 1%110443), ( -12, 1%4841182), (-100, 1%6826318) ]
 
 -- compute digits by adding zeros to numerator and dividing
 piDigits :: Int -> String
