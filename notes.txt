@@ -4,4 +4,7 @@ The goals of this project are:
 - Possibly to compare different haskell -> javascript compilers.
 - To try out optimization flags.
 - To write a fun/educational pi calculator in haskell.
-- 
+- to provide a web based interface to the pi calculator ( possibly in react ).
+- to allow for the option of running in the browser or on a server.
+
+Added command line options

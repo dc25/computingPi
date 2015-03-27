@@ -21,8 +21,9 @@ pi' digits = 4*sum [scale * atanTaylor x termLimit | (scale, x) <- parameters, l
 
 -- compute digits by adding zeros to numerator and dividing
 piDigits :: Int -> String
-piDigits digits = show $ 10^length (show piDen) * piNum `div` piDen where
+piDigits digits = withDecimal where
     computedPi = pi' digits
     piDen = denominator computedPi
     piNum = numerator computedPi
-
+    digitsOnly = show $ 10^length (show piDen) * piNum `div` piDen 
+    withDecimal = head digitsOnly : "." ++ tail digitsOnly
