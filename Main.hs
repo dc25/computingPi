@@ -6,15 +6,6 @@ import System.Exit
 import Text.Read
 import Pi
 
---main :: IO ()
---main = do
---    args <- getArgs
---    let digitsToCompute = read $ head args
---    let computedDigits = piDigits digitsToCompute
---    checkDigits <- getContents
---    print $ length $ takeWhile (uncurry (==)) $ zip computedDigits checkDigits
---
-
 -- compute pi to number of digits requested on cmd line
 -- then count correct digits by comparing to precomputed digits
 --
@@ -27,7 +18,7 @@ main = do
     Options { optDigits = digitCount, optCheck = maybeCheckFile } <- getOptions
     let computedDigits = piDigits digitCount
     case maybeCheckFile of
-        Nothing -> putStrLn $ take digitCount computedDigits
+        Nothing -> putStrLn $ take digitCount computedDigits 
         Just f -> do
             checkDigits <- readFile f
             print $ length $ takeWhile (uncurry (==)) $ zip computedDigits checkDigits
