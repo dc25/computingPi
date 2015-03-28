@@ -13,8 +13,10 @@ atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..]
 atanTaylor :: Rational -> Rational -> Rational
 atanTaylor x termLimit = sum $ takeWhile ((termLimit <).abs) $ atanTaylorTerms x
 
--- (exact formula thanks to wikipedia): pi/4 = 4 * atan 1/5 - atan 1/239
--- http://en.wikipedia.org/wiki/Machin-like_formula
+-- Exact formulas thanks to wikipedia: http://en.wikipedia.org/wiki/Machin-like_formula
+-- pi/4 = 4 * atan 1/5 - atan 1/239
+-- or:
+-- pi/4 = 183 * atan 1/239 + 32 * atan 1/1023 - 68 * atan 1/5832 + 12 * atan 1/110443 - 12 * atan 1/4841182 - 100 * atan 1/6826318
 pi' :: Int -> Rational
 pi' digits = 4*sum [scale * atanTaylor x termLimit | (scale, x) <- parameters, let termLimit = (1%10^digits)/abs scale] where 
     parameters = [ (183, 1%239), (32, 1%1023), (-68, 1%5832), (12, 1%110443), (-12, 1%4841182), (-100, 1%6826318) ]
