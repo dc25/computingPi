@@ -2,30 +2,26 @@ module Pi (
     piDigits
 ) where
 
-import Data.Ratio
-
--- generate all the terms for the Taylor series representation of atan x
-atanTaylorTerms :: Rational -> [Rational]
-atanTaylorTerms x = zipWith (/) (iterate ((-x*x)*) x) [1,3..] 
-
 -- Take the terms up to a limit of the Taylor series of 
 -- atan x, add them up to get atan x. 
-atanTaylor :: Rational -> Rational -> Rational
-atanTaylor x termLimit = sum $ takeWhile ((termLimit <).abs) $ atanTaylorTerms x
+--
+-- Now scaling all operations by 10^digits to eliminate need to use
+-- Rationals.  This also makes things lots faster.
+-- Thanks to: http://en.literateprograms.org/Pi_with_Machin%27s_formula_(Haskell)
+-- for this technique.
+atanTaylor :: Integer -> Int -> Integer
+atanTaylor x digits = sum $ takeWhile ((>0).abs) $ zipWith div (iterate (`div`(-x*x)) (10^digits `div` x)) [1,3..] 
 
 -- Exact formulas thanks to wikipedia: http://en.wikipedia.org/wiki/Machin-like_formula
 -- pi/4 = 4 * atan 1/5 - atan 1/239
 -- or:
 -- pi/4 = 183 * atan 1/239 + 32 * atan 1/1023 - 68 * atan 1/5832 + 12 * atan 1/110443 - 12 * atan 1/4841182 - 100 * atan 1/6826318
-pi' :: Int -> Rational
-pi' digits = 4*sum [scale * atanTaylor x termLimit | (scale, x) <- parameters, let termLimit = (1%10^digits)/abs scale] where 
-    parameters = [ (183, 1%239), (32, 1%1023), (-68, 1%5832), (12, 1%110443), (-12, 1%4841182), (-100, 1%6826318) ]
+pi' :: Int -> Integer
+pi' digits = 4*sum [scale * atanTaylor x digits | (scale, x) <- parameters] where 
+    parameters = [ (183, 239), (32, 1023), (-68, 5832), (12, 110443), (-12, 4841182), (-100, 6826318) ]
 
 -- compute digits by adding zeros to numerator and dividing
 piDigits :: Int -> String
 piDigits digits = withDecimal where
-    computedPi = pi' digits
-    piDen = denominator computedPi
-    piNum = numerator computedPi
-    digitsOnly = show $ 10^length (show piDen) * piNum `div` piDen 
+    digitsOnly = show $ pi' digits
     withDecimal = head digitsOnly : "." ++ tail digitsOnly
