@@ -61,13 +61,21 @@ showVersion _ = do
     putStrLn "Pi digit generator 3.1"
     exitSuccess
 
+
+-- Added this for ghc 7.4.1 which does not implement readMaybe 
+-- Ghc 7.4.1 is what oomes with raspbian as of 2015-04-03
+readMaybe' = fmap fst . listToMaybe' . reads where
+    listToMaybe' xs = 
+        case xs of [] -> Nothing
+                   [a] -> Just a
+
 -- See the language report for explanation of the use of field labels below.
 -- https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-490003.15
 
 -- Update options to contain the number of digits of pi desired.
 setOptDigits :: String -> Options -> IO Options
 setOptDigits cmdLineArg opt = 
-    case readMaybe cmdLineArg  of
+    case readMaybe' cmdLineArg  of
          Just x -> return opt { optDigits = x}
          Nothing -> do
              putStrLn ("Invalid value for digits:" ++ cmdLineArg)
